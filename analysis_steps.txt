@@ -1,0 +1,9 @@
+Give overview
+
+We will compare observed soil moisture with soil moisture from a climate model. Soil moisture can have an affect on hurricanes after they have crossed land and started to weaken.
+
+
+Download:
+-soil moisture data
+-hurricane track data
+-NCEP data
