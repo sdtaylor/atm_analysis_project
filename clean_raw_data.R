@@ -47,3 +47,28 @@ write.csv(readings, paste0(cleaned_data_dir,'readings.csv'), row.names = F)
 write.csv(depths, paste0(cleaned_data_dir,'depths.csv'), row.names = F)
 write.csv(stations, paste0(cleaned_data_dir,'stations.csv'), row.names = F)
 
+#############################################################################
+#Make a single shapefile to use in the project
+readings=read_csv(paste0(cleaned_data_dir,'readings.csv'))
+depths=read.csv(paste0(cleaned_data_dir,'depths.csv'))
+stations=read.csv(paste0(cleaned_data_dir,'stations.csv'))
+
+#Keep stations with 7/11 years 2000-2010
+stations_to_keep = readings %>%
+  select(stationID, Y) %>%
+  filter(Y>=2000, Y<=2010) %>%
+  distinct() %>%
+  group_by(stationID) %>%
+  summarize(n_years=n()) %>%
+  ungroup() %>%
+  filter(n_years >= 7)
+
+
+readings_climatology = readings %>% 
+  filter(Y>2000, Y<=2010, depth==5, stationID %in% stations_to_keep$stationID) %>% 
+  group_by(stationID) %>% 
+  summarize(moisture=mean(moisture), n=n()) %>%
+  ungroup() %>%
+  left_join(select(stations, stationID=StationID, Lat, Long), by='stationID')
+
+write.csv(readings_climatology,'./soil_moisture.csv', row.names = F)
